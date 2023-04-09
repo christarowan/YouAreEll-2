@@ -9,6 +9,8 @@ import java.util.List;
 
 import controllers.IdController;
 import controllers.MessageController;
+import models.Id;
+import models.Message;
 import youareell.YouAreEll;
 
 // Simple Shell is a Console view for youareell.YouAreEll.
@@ -21,7 +23,7 @@ public class SimpleShell {
     }
     public static void main(String[] args) throws java.io.IOException {
 
-        YouAreEll urll = new YouAreEll(new MessageController(), new IdController());
+        // YouAreEll urll = new YouAreEll(new MessageController(), new IdController());
         
         String commandLine;
         BufferedReader console = new BufferedReader
@@ -68,18 +70,47 @@ public class SimpleShell {
 
                 // ids
                 if (list.contains("ids")) {
-                    String results = webber.get_ids();
-                    SimpleShell.prettyPrint(results);
+                    if (list.contains("ids")) {
+                        IdController idc = new IdController();
+                        ArrayList<Id> results = idc.getIds();
+                        SimpleShell.prettyPrint(String.valueOf(results));
+                        continue;
+                    }
+                }
+
+
+                // messages
+             /*   if (list.contains("messages")) {
+                    MessageController mc = new MessageController();
+                   ArrayList<Message> results = mc.getMessagesForId(commands[1]);
+
+                   SimpleShell.prettyPrint(String.valueOf(results));
+                    continue;
+               }  */
+
+
+                if (list.contains("messages") && commands.length < 3) {
+                    MessageController mControl = new MessageController();
+                    ArrayList<Message> results = mControl.getMessagesForId(commands[1]);
+                    for (Message m : results) {
+                            SimpleShell.prettyPrint(String.valueOf(m));
+                    }
+                    continue;
+                } else if (list.contains("messages")) {
+                    MessageController messControl = new MessageController();
+                    Message messRetrieved = messControl.getMessageForSequence(commands[1], commands[2]);
+                    SimpleShell.prettyPrint(String.valueOf(messRetrieved));
                     continue;
                 }
 
-                // messages
-                if (list.contains("messages")) {
-                    String results = webber.get_messages();
-                    SimpleShell.prettyPrint(results);
-                    continue;
+                if (list.contains("send")) {
+                    MessageController messControl = new MessageController();
+                    Message msg = messControl.postMessage(commands[1],commands[2],commands[3]);
+
                 }
-                // you need to add a bunch more.
+
+
+            /*    // you need to add a bunch more.
 
                 //!! command returns the last command in history
                 if (list.get(list.size() - 1).equals("!!")) {
@@ -93,7 +124,7 @@ public class SimpleShell {
                 } else {
                     pb.command(list);
                 }
-
+*/
                 // // wait, wait, what curiousness is this?
                 // Process process = pb.start();
 
@@ -112,8 +143,8 @@ public class SimpleShell {
             }
 
             //catch ioexception, output appropriate message, resume waiting for input
-            catch (IOException e) {
-                System.out.println("Input Error, Please try again!");
+            catch (Exception e) {
+                System.out.println("Input Error, Please try again!"+e);
             }
             // So what, do you suppose, is the meaning of this comment?
             /** The steps are:
